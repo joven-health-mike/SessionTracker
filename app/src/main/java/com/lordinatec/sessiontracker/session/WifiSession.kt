@@ -2,6 +2,9 @@ package com.lordinatec.sessiontracker.session
 
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data class representing Wifi data
+ */
 data class WifiData(
     var ssid: String = "",
     var bssid: String = "",
@@ -12,7 +15,13 @@ data class WifiData(
     var mac: String = ""
 )
 
+/**
+ * Sealed class representing Wifi events
+ */
 sealed class WifiEvent {
+    /**
+     * Data class representing a Wifi connected event
+     */
     data class WifiConnected(
         val ssid: String,
         val bssid: String,
@@ -21,14 +30,45 @@ sealed class WifiEvent {
         val linkSpeed: Int
     ) : WifiEvent()
 
+    /**
+     * Data class representing a Wifi disconnected event
+     */
     data class WifiDisconnected(val ssid: String, val bssid: String) : WifiEvent()
+
+    /**
+     * Data class representing a Wifi signal strength changed event
+     */
     data class WifiSignalStrengthChanged(val rssi: Int) : WifiEvent()
+
+    /**
+     * Data class representing a Wifi link speed changed event
+     */
     data class WifiLinkSpeedChanged(val linkSpeed: Int) : WifiEvent()
+
+    /**
+     * Data class representing a Wifi frequency changed event
+     */
     data class WifiFrequencyChanged(val frequency: Int) : WifiEvent()
+
+    /**
+     * Data class representing a Wifi IP changed event
+     */
     data class WifiIpChanged(val ip: String) : WifiEvent()
+
+    /**
+     * Data class representing a Wifi MAC changed event
+     */
     data class WifiMacChanged(val mac: String) : WifiEvent()
 }
 
+/**
+ * Class representing a Wifi session
+ *
+ * @property sessionId The session ID
+ * @property wifiEventProvider The flow of Wifi events
+ *
+ * @constructor Creates a new WifiSession
+ */
 class WifiSession(
     override val sessionId: String,
     private val wifiEventProvider: Flow<WifiEvent>
@@ -41,6 +81,9 @@ class WifiSession(
 
     private val _wifiData = WifiData()
 
+    /**
+     * Listens for Wifi events
+     */
     suspend fun listenForWifiEvents() {
         wifiEventProvider.collect { wifiEvent ->
             when (wifiEvent) {
